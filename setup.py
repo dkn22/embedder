@@ -7,7 +7,7 @@ setup(name='embedder',
       author_email='dat.nguyen@cantab.net',
       url='https://github.com/dkn22/embedder',
       packages=['embedder',],
-      license='MIT',
+      license='BSD',
       classifiers=[
           'Environment :: MacOS X',
           'Environment :: Win32 (MS Windows)',
