@@ -49,6 +49,13 @@ def test_transform(test_data):
 
     transformed = embedder.transform(X)
     embedded = embedder.fit_transform(X, y, epochs=1)
+    embeddings = embedder.get_embeddings()
 
     assert transformed.shape == (10000, 18 + 50 + 50)
     assert embedded.shape == (10000, 18 + 50 + 50)
+
+    assert len(embeddings) == 2
+    assert 'Categorical 1' in embeddings.keys() and \
+           'Categorical 2' in embeddings.keys()
+    assert embeddings['Categorical 1'].shape == (1000, 50)
+    assert embeddings['Categorical 2'].shape == (1000, 50)
