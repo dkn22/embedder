@@ -1,8 +1,18 @@
 from embedder.preprocessing import categorize, size_embeddings, encode_categorical
 from keras.models import model_from_json
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from collections import OrderedDict
-from copy import deepcopy
 import warnings
+
+
+checkpoint = ModelCheckpoint('weights.hdf5', monitor='val_loss',
+                             verbose=0, save_best_only=True,
+                             save_weights_only=True,
+                             mode='auto')
+
+early_stop = EarlyStopping(monitor='val_loss', patience=10,
+                           mode='min',
+                           verbose=1)
 
 def check_emb_sizes(dictionary):
     if not isinstance(dictionary, dict):
@@ -15,15 +25,11 @@ class Base(object):
 
     def __init__(self, emb_sizes, model_json=None):
         self.model_json = model_json
-        # self.max_emb_dim = max_emb_dim
-
         self._categorical_vars = emb_sizes.keys()
-        # self._numerical_vars = None
 
         check_emb_sizes(emb_sizes)
         self._emb_sizes = emb_sizes
         self.model = None
-        # self.encoders_ = None
 
     @property
     def emb_sizes(self):
@@ -47,17 +53,7 @@ class Base(object):
 
         return '%s(%r)' % (self.__class__.__name__, params)
 
-    # def __getattribute__(self, item):
-    #     if item.startswith('fit'):
-    #         if self._emb_sizes is None:
-    #             warnings.warn('Embedding sizes are not available.')
-    #
-    #     return object.__getattribute__(self, item)
-
     def _prepare_inputs(self, X):
-        # if self._emb_sizes is None or 'object' in X.dtypes:
-        #     # warnings.warn('X contains object types. Will attempt to encode to integers.')
-        #     X = self._categorize(X, encode_categorical=True)
         numerical_vars = [x for x in X.columns
                           if x not in self._categorical_vars]
 
@@ -68,24 +64,6 @@ class Base(object):
         x_inputs.append(X[numerical_vars].values)
 
         return x_inputs
-
-    # def _categorize(self, X, encode_categorical=True):
-    #
-    #     max_emb_dim = self.max_emb_dim
-    #
-    #     cat_sz = categorize(X)
-    #     emb_sz = size_embeddings(cat_sz, max_dim=max_emb_dim)
-    #
-    #     self._emb_sizes = emb_sz
-    #     self._categorical_vars = emb_sz.keys()
-    #     self._numerical_vars = [x for x in X.columns
-    #                             if x not in emb_sz.keys()]
-    #
-    #     if encode_categorical:
-    #         X, encoders = encode_categorical(X, self._categorical_vars)
-    #         self.encoders_ = encoders
-    #
-    #     return X
 
     def _create_model(self, X,
                       model_json=None):
@@ -108,13 +86,14 @@ class Base(object):
         if self.model is None:
             raise AttributeError('No trained model available.')
 
-            # create a copy of the model
+        # create a copy of the model
         learned_weights = self.model.get_weights()
         extractor = model_from_json(self.model.to_json())
         extractor.set_weights(learned_weights)
 
         if merge_idx is None:
-            # merge_idx = extractor.layers.index(extractor.get_layer('concatenate_1'))
+            # merge_idx = extractor.layers.index(
+            #   extractor.get_layer('concatenate_1'))
             merge_idx = [idx for idx, layer in enumerate(extractor.layers)
                          if 'Concatenate' in str(layer)][0]
 
@@ -140,16 +119,9 @@ class Base(object):
         return embedded
 
     def predict(self, X_test):
-
-        # X_test = X.copy()
-
         if not hasattr(self.model, 'predict'):
             raise AttributeError('Model attribute needs to be '
                                  'a Keras model with a predict method.')
-
-        # if self.encoders_ is not None:
-        #     for var, encoder in self.encoders_.items():
-        #         X_test.loc[:, var] = encoder.transform(X_test.loc[:, var])
 
         test_inputs_list = self._prepare_inputs(X_test)
         preds = self.model.predict(test_inputs_list)
@@ -183,7 +155,3 @@ class Base(object):
 
     def fit(self, X, y):
         raise NotImplementedError('fit method needs to be implemented.')
-
-    # def fit_transform(self, X, y):
-    #     raise NotImplementedError(
-    #         'fit_transform method needs to be implemented.')

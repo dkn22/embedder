@@ -11,7 +11,7 @@ def visualize(emb, labels=None):
         assert len(labels) == Y.shape[0]
 
         for i, txt in enumerate(labels):
-            ax.annotate(txt, (-Y[i, 0], -Y[i, 1]), xytext=(-20, 8),
+            plt.annotate(txt, (-Y[i, 0], -Y[i, 1]), xytext=(-20, 8),
                         textcoords='offset points')
 
     return ax

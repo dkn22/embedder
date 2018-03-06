@@ -4,7 +4,6 @@ from keras.models import Sequential, Model, model_from_json
 from keras.layers import (Dense, Dropout, Embedding,
                           Activation, Input, concatenate, Reshape, Flatten)
 from keras.layers.normalization import BatchNormalization
-# from keras.layers.advanced_activations import PReLU
 from keras.optimizers import Adam
 
 from embedder.metrics import r2
@@ -21,25 +20,14 @@ class Embedder(Base):
             checkpoint=None,
             early_stop=None):
 
-        # X = self._categorize(X, encode=True)
         nnet = self._create_model(X, model_json=self.model_json)
 
         nnet.compile(loss='mean_squared_error',
                      optimizer='adam',
                      metrics=[r2])
 
-        # checkpoint = ModelCheckpoint(filename, monitor='val_loss',
-        #                              verbose=0, save_best_only=True,
-        #                              save_weights_only=True,
-        #                              mode='auto') if save_checkpoint else None
-        #
-        # early_stop = EarlyStopping(monitor='val_loss', patience=10,
-        #                            mode='min',
-        #                            verbose=1) if early_stopping else None
-
         callbacks = [cb for cb in [checkpoint, early_stop] if cb is not None]
         callbacks = callbacks if callbacks else None
-
 
         x_inputs_list = self._prepare_inputs(X)
 
@@ -54,20 +42,15 @@ class Embedder(Base):
 
     def fit_transform(self, X, y,
                       batch_size=256, epochs=100,
-                      save_checkpoint=True,
-                      early_stopping=True,
-                      weights_filename=None
+                      checkpoint=None,
+                      early_stop=None
                       ):
-
         self.fit(X, y, batch_size, epochs,
                  checkpoint, early_stop)
 
         return self.transform(X)
 
     def _default_nnet(self, X):
-
-        # if self._emb_sizes is None:
-        #     self._categorize(X, encode=False)
 
         emb_sz = self.emb_sizes
         numerical_vars = [x for x in X.columns

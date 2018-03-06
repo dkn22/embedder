@@ -1,5 +1,4 @@
 from embedder.base import Base
-from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.models import Sequential, Model, model_from_json
 from keras.layers import (Dense, Dropout, Embedding,
                           Activation, Input, concatenate, Reshape, Flatten)
@@ -8,7 +7,6 @@ from keras.layers.advanced_activations import PReLU
 from keras.optimizers import Adam
 
 # from embedder.metrics import precision, recall
-
 
 class Embedder(Base):
 
@@ -21,21 +19,11 @@ class Embedder(Base):
             checkpoint=None,
             early_stop=None):
 
-        # X = self._categorize(X, encode=True)
         nnet = self._create_model(X, model_json=self.model_json)
 
         nnet.compile(loss='binary_crossentropy',
                      optimizer='adam',
                      metrics=['accuracy'])
-
-        # checkpoint = ModelCheckpoint(filename, monitor='val_loss',
-        #                              verbose=0, save_best_only=True,
-        #                              save_weights_only=True,
-        #                              mode='auto') if save_checkpoint else None
-        #
-        # early_stop = EarlyStopping(monitor='val_loss', patience=10,
-        #                            mode='min',
-        #                            verbose=1) if early_stopping else None
 
         callbacks = [checkpoint, early_stop]
 
@@ -61,9 +49,6 @@ class Embedder(Base):
         return self.transform(X)
 
     def _default_nnet(self, X):
-
-        # if self._emb_sizes is None:
-        #     self._categorize(X, encode=False)
 
         emb_sz = self.emb_sizes
         numerical_vars = [x for x in X.columns
