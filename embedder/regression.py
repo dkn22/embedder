@@ -26,7 +26,7 @@ class Embedder(Base):
                      optimizer='adam',
                      metrics=[r2])
 
-        callbacks = [cb for cb in [checkpoint, early_stop] if cb is not None]
+        callbacks = list(filter(None, [checkpoint, early_stop]))
         callbacks = callbacks if callbacks else None
 
         x_inputs_list = self._prepare_inputs(X)

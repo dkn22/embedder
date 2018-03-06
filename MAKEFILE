@@ -1,0 +1,4 @@
+TEST_PATH = tests/
+
+test: clean-pyc
+    py.test --verbose --color=yes $(TEST_PATH)

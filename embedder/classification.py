@@ -25,13 +25,14 @@ class Embedder(Base):
                      optimizer='adam',
                      metrics=['accuracy'])
 
-        callbacks = [checkpoint, early_stop]
+        callbacks = list(filter(None, [checkpoint, early_stop]))
+        callbacks = callbacks if callbacks else None
 
         x_inputs_list = self._prepare_inputs(X)
 
         nnet.fit(x_inputs_list, y.values, batch_size=batch_size,
                  epochs=epochs,
-                 callbacks=[cb for cb in callbacks if cb is not None],
+                 callbacks=callbacks,
                  validation_split=0.2)
 
         self.model = nnet
