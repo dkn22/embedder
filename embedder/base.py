@@ -102,7 +102,9 @@ class Base(object):
 
         return nnet
 
-    def transform(self, X, as_df=False):
+    def transform(self, X,
+                  as_df=False,
+                  merge_idx=None):
         if self.model is None:
             raise AttributeError('No trained model available.')
 
@@ -111,10 +113,11 @@ class Base(object):
         extractor = model_from_json(self.model.to_json())
         extractor.set_weights(learned_weights)
 
-        # merge_idx = extractor.layers.index(extractor.get_layer('concatenate_1'))
+        if merge_idx is None:
+            # merge_idx = extractor.layers.index(extractor.get_layer('concatenate_1'))
+            merge_idx = [idx for idx, layer in enumerate(extractor.layers)
+                         if 'Concatenate' in str(layer)][0]
 
-        merge_idx = [idx for idx, layer in enumerate(extractor.layers)
-                     if 'Concatenate' in str(layer)][0]  # check
         extractor.layers = extractor.layers[:merge_idx + 1]
         extractor.outputs = [extractor.layers[-1].output]
         extractor.layers[-1].outbound_nodes = []

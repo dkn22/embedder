@@ -93,7 +93,8 @@ class SafeLabelEncoder(LabelEncoder):
                      for x in y
                      ])
 
-        self.classes_ = np.array(self.classes_.tolist() + ['unseen'])
+        if unseen in e:
+            self.classes_ = np.array(self.classes_.tolist() + ['unseen'])
 
         return e
 
