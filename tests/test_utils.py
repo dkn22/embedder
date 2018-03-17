@@ -2,7 +2,7 @@ import sys
 sys.path.insert(1, '../embedder')
 
 from embedder.preprocessing import (categorize,
-size_embeddings, encode_categorical, replace_rare)
+pick_emb_dim, encode_categorical, replace_rare)
 
 from sklearn.datasets import make_classification
 import pandas as pd
@@ -34,14 +34,22 @@ def test_categorize(test_data):
     assert cat_sz[0] == ('Categorical 1', 10)
     assert cat_sz[1] == ('Categorical 2', 10)
 
-def test_size_embeddings(test_data):
+def test_pick_emb_dim(test_data):
     cat_sz = categorize(test_data)
 
-    emb_sz = size_embeddings(cat_sz)
+    emb_sz = pick_emb_dim(cat_sz)
 
     assert len(emb_sz) == 2
     assert emb_sz['Categorical 1'] == (10, 5)
     assert emb_sz['Categorical 2'] == (10, 5)
+
+def test_pick_custom_emb_dim(test_data):
+    cat_sz = categorize(test_data)
+    emb_sz = pick_emb_dim(cat_sz, emb_dims=[3, 4])
+
+    assert len(emb_sz) == 2
+    assert emb_sz['Categorical 1'] == (10, 3)
+    assert emb_sz['Categorical 2'] == (10, 4)
 
 def test_encode_categorical(test_data):
 

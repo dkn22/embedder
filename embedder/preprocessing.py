@@ -11,13 +11,20 @@ def categorize(X):
     return cat_sz
 
 
-def size_embeddings(cat_sz,
-                    max_dim=50,
-                    include_unseen=False):
-    if include_unseen:
-        emb_sz = {var: (c + 1, min(max_dim, (c + 1) // 2)) for var, c in cat_sz}
+def pick_emb_dim(cat_sz,
+                 max_dim=50,
+                 emb_dims=None,
+                 include_unseen=False):
+    if emb_dims is None:
+        emb_sz = {var: (input_dim, min(max_dim, (input_dim + 1) // 2))
+                  for var, input_dim in cat_sz}
     else:
-        emb_sz = {var: (c, min(max_dim, (c + 1) // 2)) for var, c in cat_sz}
+        emb_sz = {c[0]: (c[1], emb_dim)
+                  for c, emb_dim in zip(cat_sz, emb_dims)
+                  }
+
+    if include_unseen:
+        emb_sz = {var: (sz[0] + 1, sz[1]) for var, sz in emb_sz.items()}
 
     return emb_sz
 

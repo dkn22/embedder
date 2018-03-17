@@ -1,6 +1,6 @@
 from sklearn.datasets import make_classification
 from embedder.classification import Embedder
-from embedder.preprocessing import categorize, size_embeddings, encode_categorical
+from embedder.preprocessing import categorize, pick_emb_dim, encode_categorical
 import pandas as pd
 import pytest
 
@@ -25,7 +25,7 @@ def test_data():
 def test_fit_predict(test_data):
     X, y = test_data
     cat_sz = categorize(X)
-    emb_sz = size_embeddings(cat_sz)
+    emb_sz = pick_emb_dim(cat_sz)
     X, encoders = encode_categorical(X)
 
     embedder = Embedder(emb_sz)
@@ -39,24 +39,15 @@ def test_fit_predict(test_data):
 def test_transform(test_data):
     X, y = test_data
     cat_sz = categorize(X)
-    emb_sz = size_embeddings(cat_sz, max_dim=50)
+    emb_sz = pick_emb_dim(cat_sz, max_dim=50)
     X, encoders = encode_categorical(X)
 
     embedder = Embedder(emb_sz)
     embedder.fit(X, y, epochs=1)
 
     transformed = embedder.transform(X)
-    embedded = embedder.fit_transform(X, y, epochs=1)
-    embeddings = embedder.get_embeddings()
 
     assert transformed.shape == (10000, 18 + 50 + 50)
-    assert embedded.shape == (10000, 18 + 50 + 50)
-
-    assert len(embeddings) == 2
-    assert 'Categorical 1' in embeddings.keys() and \
-        'Categorical 2' in embeddings.keys()
-    assert embeddings['Categorical 1'].shape == (1000, 50)
-    assert embeddings['Categorical 2'].shape == (1000, 50)
 
 
 

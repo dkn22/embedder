@@ -1,7 +1,9 @@
-from embedder.preprocessing import categorize, size_embeddings, encode_categorical
+from embedder.preprocessing import categorize, pick_emb_dim, encode_categorical
 from keras.models import model_from_json
 from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras import backend as K
 from collections import OrderedDict
+from operator import itemgetter
 import warnings
 
 
@@ -29,6 +31,10 @@ class Base(object):
 
         check_emb_sizes(emb_sizes)
         self._emb_sizes = emb_sizes
+
+        self.emb_dim = {var: sz[1] for var, sz in emb_sizes.items()}
+        self.input_dim = {var: sz[0] for var, sz in emb_sizes.items()}
+
         self.model = None
 
     @property
@@ -47,7 +53,9 @@ class Base(object):
         self._emb_sizes = dictionary
 
     def __repr__(self):
-        params = {'emb_sizes': self.emb_sizes,
+        params = {'input_dim': self.input_dim,
+                  'emb_dim': self.emb_dim,
+                  'categorical': self._categorical_vars,
                   'model': self.model
                   }
 
@@ -94,12 +102,15 @@ class Base(object):
         if merge_idx is None:
             # merge_idx = extractor.layers.index(
             #   extractor.get_layer('concatenate_1'))
-            merge_idx = [idx for idx, layer in enumerate(extractor.layers)
+            merge_idx = [idx for idx, layer in enumerate(self.model.layers)
                          if 'Concatenate' in str(layer)][0]
 
         extractor.layers = extractor.layers[:merge_idx + 1]
         extractor.outputs = [extractor.layers[-1].output]
         extractor.layers[-1].outbound_nodes = []
+
+        # extractor = K.function(self.model.inputs,
+        #                        [self.model.layers[merge_idx].output])
 
         x_inputs_list = self._prepare_inputs(X)
 
