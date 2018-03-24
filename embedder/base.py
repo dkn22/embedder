@@ -26,6 +26,11 @@ def check_emb_sizes(dictionary):
 class Base(object):
 
     def __init__(self, emb_sizes, model_json=None):
+        '''
+        :param emb_sizes: a dictionary of categorical variables (keys)
+                    and their (# unique, embedding dimension) values.
+        :param model_json: Keras model architecture as json
+        '''
         self.model_json = model_json
         self._categorical_vars = emb_sizes.keys()
 
@@ -91,6 +96,14 @@ class Base(object):
     def transform(self, X,
                   as_df=False,
                   merge_idx=None):
+        '''
+        Transforms the input matrix into a matrix with learnt embeddings.
+
+        :param X: input DataFrame
+        :param as_df: whether to return a DF or numpy ndarray
+        :param merge_idx: optional index of the Concatenate layer
+        :return:
+        '''
         if self.model is None:
             raise AttributeError('No trained model available.')
 
@@ -117,7 +130,7 @@ class Base(object):
         embedded = extractor.predict(x_inputs_list)
 
         if as_df:
-            sizes = [(var, sz[1]) for var, sz in self.emb_sizes]
+            sizes = [(var, sz[1]) for var, sz in self.emb_sizes.items()]
             numerical_vars = [x for x in X.columns
                               if x not in self._categorical_vars]
             names = [var + '_{}'.format(x) for x in range(emb_dim)
@@ -130,6 +143,12 @@ class Base(object):
         return embedded
 
     def predict(self, X_test):
+        '''
+        Predict the output from test data.
+
+        :param X_test: input DataFrame
+        :return: array of predictions
+        '''
         if not hasattr(self.model, 'predict'):
             raise AttributeError('Model attribute needs to be '
                                  'a Keras model with a predict method.')
@@ -140,6 +159,10 @@ class Base(object):
         return preds
 
     def get_embeddings(self):
+        '''
+        Return a dictionary of all embedding matrices, with
+        the names of corresponding categorical variables as keys.
+        '''
         if self.model is None:
             raise AttributeError('No trained model available.')
 

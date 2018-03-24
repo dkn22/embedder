@@ -5,6 +5,13 @@ import numpy as np
 
 
 def categorize(X):
+    '''
+    Determine categorical variables in X and return
+    their names and number of unique categories.
+
+    :param X: input DataFrame
+    :return: list of tuples
+    '''
     cat_sz = [(col, X[col].unique().shape[0]) for col in X.columns
               if X[col].dtype == 'object']
 
@@ -15,6 +22,17 @@ def pick_emb_dim(cat_sz,
                  max_dim=50,
                  emb_dims=None,
                  include_unseen=False):
+    '''
+    Determine the embedding dimensions for categorical variables.
+    If embedding dimensions are not provided, will use a rule of thumb.
+
+    :param cat_sz: list of tuples
+    :param max_dim: maximum embedding dimension
+    :param emb_dims: array-like of embedding dimensions,
+                     same length as cat_sz
+    :param include_unseen: optional, add extra category for 'unseen'
+    :return: dictionary of categorical variables for Embedder
+    '''
     if emb_dims is None:
         emb_sz = {var: (input_dim, min(max_dim, (input_dim + 1) // 2))
                   for var, input_dim in cat_sz}
@@ -32,6 +50,14 @@ def pick_emb_dim(cat_sz,
 def encode_categorical(X,
                        categorical_vars=None,
                        copy=True):
+    '''
+    Encode categorical variables as integers.
+
+    :param X: input DataFrame
+    :param categorical_vars: optional, list of categorical variables
+    :param copy: optional, whether to modify a copy
+    :return: DataFrame, LabelEncoders
+    '''
     df = X.copy() if copy else X
     encoders = {}
 
@@ -49,6 +75,16 @@ def encode_categorical(X,
 def replace_rare(X, threshold=10, code='rare',
                  categorical_vars=None,
                  copy=True):
+    '''
+    Replace rare categories in X with a new category.
+
+    :param X: input DataFrame
+    :param threshold: threshold below which to replace
+    :param code: new category's name
+    :param categorical_vars: list of categorical variables
+    :param copy: optional, whether to modify a copy
+    :return: DataFrame
+    '''
 
     df = X.copy() if copy else X
 

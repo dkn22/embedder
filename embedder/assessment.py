@@ -2,6 +2,14 @@ import matplotlib.pyplot as plt
 from sklearn import manifold
 
 def visualize(emb, labels=None):
+    '''
+    Performs t-SNE dimensionality reduction on the embedding
+    matrix and plots the data in 2D.
+
+    :param emb: embedding matrix for one variable
+    :param labels: labels for embeddings
+    :return: Axes object
+    '''
 
     tsne = manifold.TSNE(init='pca', random_state=0)
     Y = tsne.fit_transform(emb)

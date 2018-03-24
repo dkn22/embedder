@@ -18,6 +18,17 @@ class Embedder(Base):
             batch_size=256, epochs=100,
             checkpoint=None,
             early_stop=None):
+        '''
+        Fit a neural network on the data.
+
+        :param X: input DataFrame
+        :param y: input Series
+        :param batch_size: size of mini-batch
+        :param epochs: number of epochs for training
+        :param checkpoint: optional Checkpoint object
+        :param early_stop: optional EarlyStopping object
+        :return: Embedder instance
+        '''
 
         nnet = self._create_model(X, model_json=self.model_json)
 
@@ -42,12 +53,24 @@ class Embedder(Base):
     def fit_transform(self, X, y,
                       batch_size=256, epochs=100,
                       checkpoint=None,
-                      early_stop=None
+                      early_stop=None,
+                      as_df=False
                       ):
+        '''
+        Fit a neural network and transform the data.
+
+        :param X: input DataFrame
+        :param y: input Series
+        :param batch_size: size of mini-batch
+        :param epochs: number of epochs for training
+        :param checkpoint: optional Checkpoint object
+        :param early_stop: optional EarlyStopping object
+        :return: transformed data
+        '''
         self.fit(X, y, batch_size, epochs,
                  checkpoint, early_stop)
 
-        return self.transform(X)
+        return self.transform(X, as_df=as_df)
 
     def _default_nnet(self, X):
 
