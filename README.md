@@ -1,16 +1,20 @@
+[![Build Status](https://travis-ci.org/dkn22/embedder.svg?branch=master)](https://travis-ci.org/dkn22/embedder)
+
 # Overview
 embedder is a small utility tool meant to simplify training, pre-processing and extraction of entity embeddings through neural networks.
 
 
-# Example -- training
-`rossman = pd.read_csv('rossman.csv')
+# Example – training
+```python
+rossman = pd.read_csv('rossman.csv')
 y = rossman['Sales']
 X = rossman.drop('Sales', axis=1)
 cat_vars = categorize(rossman)
 embedding_dict = pick_emb_dim(cat_vars, max_dim=50)
 X_encoded, encoders = encode_categorical(X)
 embedder = Embedder(embedding_dict, model_json=None)
-embedder.fit(X_encoded, y)`
+embedder.fit(X_encoded, y)
+```
 
 Let’s examine what embedder is trying to do here. 
 
