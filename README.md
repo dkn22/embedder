@@ -5,6 +5,14 @@
 # Overview
 embedder is a small utility tool meant to simplify training, pre-processing and extraction of entity embeddings through neural networks.
 
+# Installation
+
+It is recommended to create a virtual environment first.
+
+To install a package, clone the repository and run:
+```bash
+python setup.py install
+```
 
 # Example – training
 ```python
