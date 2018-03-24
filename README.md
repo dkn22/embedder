@@ -13,7 +13,6 @@ To install a package, clone the repository and run:
 ```bash
 python setup.py install
 ```
-
 # Example – training
 ```python
 rossman = pd.read_csv('rossman.csv')
