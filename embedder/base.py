@@ -134,7 +134,7 @@ class Base(object):
             numerical_vars = [x for x in X.columns
                               if x not in self._categorical_vars]
             names = [var + '_{}'.format(x) for var, emb_dim in sizes for x in range(emb_dim)]
-                               ]
+                               
 
             names += numerical_vars
 
