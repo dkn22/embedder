@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/dkn22/embedder.svg?branch=master)](https://travis-ci.org/dkn22/embedder)
 [![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&logo=twitter&label=Follow)](https://twitter.com/dat_nguyen)
 
-#Fixed issue with as_df=True option in transform 
+```!!!Fixed issue with as_df=True option in transform``` 
 # Overview
 embedder is a small utility tool meant to simplify training, pre-processing and extraction of entity embeddings through neural networks.
 
