@@ -134,8 +134,8 @@ class Base(object):
             sizes = [(var, sz[1]) for var, sz in self.emb_sizes.items()]
             numerical_vars = [x for x in X.columns
                               if x not in self._categorical_vars]
-            names = [var + '_{}'.format(x) for x in range(emb_dim)
-                     for var, emb_dim in sizes]
+            names = [var + '_{}'.format(x) for var, emb_dim in sizes for x in range(emb_dim)]
+
 
             names += numerical_vars
 
